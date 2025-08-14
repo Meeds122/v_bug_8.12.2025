@@ -27,13 +27,9 @@ fn main() {
     veb.run[App, Context](mut app, app.port)
 }
 
-enum HashAlgorithm as u8 {
-    sha256
-}
-
 pub struct PasswordHash {
 pub mut:
-    algorithm   HashAlgorithm
+    algorithm   string
     hash        string
     salt        string
 }
@@ -50,7 +46,7 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 
 	new_user := User {
 		password_hash: PasswordHash{
-			algorithm:	HashAlgorithm.sha256
+			algorithm:	'sha'
 			hash:		'1234'
 			salt:		'1234'
 		}
