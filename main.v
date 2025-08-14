@@ -3,10 +3,6 @@ module main
 import veb
 import db.sqlite
 
-import crypto.sha256
-import rand
-import rand.seed
-
 
 pub struct Context {
     veb.Context
@@ -105,29 +101,6 @@ pub:
     api_key         string
 }
 
-// ----------------------
-// -- Helper Functions --
-// ----------------------
-// Leaving off the pub from the function definition will not expose these functions
-// as API endpoints.
-
-fn new_hash_password(password string, algorithm HashAlgorithm) !PasswordHash {
-	rand.seed(seed.time_seed_array(2))
-	ps := rand.ascii(12)
-	combined := password + ps
-	if algorithm == HashAlgorithm.sha256 {
-		ph := sha256.sum(combined.bytes()).hex()
-		return PasswordHash{
-			algorithm:	HashAlgorithm.sha256
-			hash:		ph
-			salt:		ps
-		}	
-	}
-	else {
-		return error('No such hash algorithm in new_hash_password')
-	}
-}
-
 // -----------------------
 // -- Public Routes --
 // -----------------------
@@ -139,7 +112,11 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 		status: UserStatus.enabled
 		name: 'testu'
 		email: 'teste'
-		password_hash: new_hash_password('testp', app.hash_algorithm) or { panic(error) }
+		password_hash: PasswordHash{
+			algorithm:	HashAlgorithm.sha256
+			hash:		'1234'
+			salt:		'1234'
+		}
 		permisisons: Permission.owner
 	}
 
