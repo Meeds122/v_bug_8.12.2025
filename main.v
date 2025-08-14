@@ -258,62 +258,9 @@ fn logger(severity LogSeverity, message string) {
 	println('${time.now().format_ss_milli()} LOG ${upper_severity} "${message}"')
 }
 
-fn index_html(version string, enviroment string) string {
-	page := '<html><head><title>Security Sensei API</title></head><body>
-                    <h2>HAI - Security Sensei.</h2>
-                        <p>The API version is "${version}"</p>
-                        <p>The enviroment status is "${enviroment}"</p>
-                    <h3>Unauthenticated Endpoints</h3>
-                    <ul>
-                        <li><a href="/api/version">/api/version</a></li>
-                        <li><a href="/api/mode">/api/mode</a></li>
-                        <li><a href="/api/login">/api/login</a></li>
-                        <li><a href="/api/user_registration">/api/user_registration</a></li>
-                    </ul>
-                    <h3>Authenticated Endpoints</h3>
-                    <ul>
-                        <li><a href="/api/app/assets_status">/api/app/assets_status</a></li>
-                    </ul>
-                    <h3>Testing Endpoints</h3>
-                    <ul>
-						<li><a href="/api/tests/logging">/api/tests/logging</a></li>
-                        <li><a href="/api/tests/reflection">/api/tests/reflection</a></li>
-                        <li><a href="/api/tests/session">/api/tests/session</a></li>
-                        <li><a href="/api/tests/assets">/api/tests/assets</a></li>
-                        <li><a href="/api/tests/assets_status">/api/tests/assets_status</a></li>
-                    </ul>
-                </body></html>'
-	return page
-}
-
 // -----------------------
 // -- Public Routes --
 // -----------------------
-
-// Default index route does not need decorators. 
-pub fn (app &App) index(mut ctx Context) veb.Result {
-    return ctx.html(index_html(app.api_version, '${app.env}'))
-}
-
-@['/api/version'; get]
-pub fn (app &App) api_version (mut ctx Context) veb.Result {
-    return ctx.text(app.api_version)
-}
-
-@['/api/mode'; get]
-pub fn (app &App) api_mode (mut ctx Context) veb.Result {
-    return ctx.text('${app.env}')
-}
-
-@['/api/login'; get; post]
-pub fn (app &App) login(mut ctx Context) veb.Result {
-    if ctx.req.method == .get {
-        return ctx.text('Perhaps you are confused, senpai?')
-    }
-    else {
-        return ctx.text('Posted in /api/login')
-    }
-}
 
 @['/api/user_registration'; get; post]
 pub fn (app &App) user_registration(mut ctx Context) veb.Result {
