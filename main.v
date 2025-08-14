@@ -193,28 +193,47 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 
 	error_message := 'error'
 
-	in_json := '{"username":"testu","email":"teste","password":"testp"}'
+	// in_json := '{"username":"testu","email":"teste","password":"testp"}'
 
-    registration_request := json.decode(RegistrationRequest, in_json) or {
-        if app.env == Enviroment.development {
-			panic(err)
-		}
-		else if app.env == Enviroment.production {
-			elogger(err)
-			return ctx.request_error(error_message)
-		}
-		else {
-			panic(err)
-		}
-    }
+    // registration_request := json.decode(RegistrationRequest, in_json) or {
+    //     if app.env == Enviroment.development {
+	// 		panic(err)
+	// 	}
+	// 	else if app.env == Enviroment.production {
+	// 		elogger(err)
+	// 		return ctx.request_error(error_message)
+	// 	}
+	// 	else {
+	// 		panic(err)
+	// 	}
+    // }
 
-	user_permissions := Permission.owner
+	// user_permissions := Permission.owner
+
+	// new_user := User {
+	// 	status: UserStatus.enabled
+	// 	name: registration_request.username
+	// 	email: registration_request.email
+	// 	password_hash: new_hash_password(registration_request.password, app.hash_algorithm) or {
+	// 			if app.env == Enviroment.development {
+	// 				panic(err)
+	// 			}
+	// 			else if app.env == Enviroment.production {
+	// 				elogger(err)
+	// 				return ctx.request_error(error_message)
+	// 			}
+	// 			else {
+	// 				panic(err)
+	// 			}
+	// 		}
+	// 	permisisons: user_permissions
+	// }
 
 	new_user := User {
 		status: UserStatus.enabled
-		name: registration_request.username
-		email: registration_request.email
-		password_hash: new_hash_password(registration_request.password, app.hash_algorithm) or {
+		name: 'testu'
+		email: 'teste'
+		password_hash: new_hash_password('testp', app.hash_algorithm) or {
 				if app.env == Enviroment.development {
 					panic(err)
 				}
@@ -226,7 +245,7 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 					panic(err)
 				}
 			}
-		permisisons: user_permissions
+		permisisons: Permission.owner
 	}
 
 	// Compiler Bug
