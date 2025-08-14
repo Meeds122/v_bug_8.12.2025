@@ -159,14 +159,6 @@ fn new_hash_password(password string, algorithm HashAlgorithm) !PasswordHash {
 	}
 }
 
-fn verify_password (algorithm HashAlgorithm, password string, salt string, to_compare PasswordHash) bool {
-	combined := password + salt
-	if algorithm == HashAlgorithm.sha256 {
-		return (sha256.sum(combined.bytes()).hex() == to_compare.hash)
-	}
-	return false
-}
-
 // -----------------------
 // -- Public Routes --
 // -----------------------
