@@ -15,7 +15,7 @@ pub:
 
 fn main() {
     mut app := &App{
-        db:             sqlite.connect('test.db') or { panic(err) }
+        db: sqlite.connect('test.db') or { panic(err) }
     }
 
     sql app.db {
@@ -28,8 +28,6 @@ fn main() {
 pub struct PasswordHash {
 pub mut:
     algorithm   string
-    hash        string
-    salt        string
 }
 
 @[table: 'Users']
@@ -45,8 +43,6 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 	new_user := User {
 		password_hash: PasswordHash{
 			algorithm:	'sha'
-			hash:		'1234'
-			salt:		'1234'
 		}
 	}
 
@@ -57,3 +53,7 @@ pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 
     return ctx.json(new_user)
 }
+
+// So far, in my experimentation, the bug only shows up when the veb framework is involved, and insert has nested objects. 
+// - changing PasswordHash to a string (removing the nesting) does not recreate the bug. 
+// - removing the veb handlers does not recreate the bug
