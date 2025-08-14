@@ -11,20 +11,18 @@ pub struct Context {
 pub struct App {
 pub:
     db              sqlite.DB
-    port            u16
 }
 
 fn main() {
     mut app := &App{
-        db:             sqlite.connect('securitysensei.db') or { panic(err) }
-        port:           8080
+        db:             sqlite.connect('test.db') or { panic(err) }
     }
 
     sql app.db {
         create table User
     } or { panic(error) }
 
-    veb.run[App, Context](mut app, app.port)
+    veb.run[App, Context](mut app, 8080)
 }
 
 pub struct PasswordHash {
