@@ -191,35 +191,24 @@ fn logger(severity LogSeverity, message string) {
 @['/api/user_registration'; get; post]
 pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 
-	// TODO: CHECK CONFIG IF ALLOW USER SELF REGISTRATION
+	error_message := 'error'
 
-    error_message := 'Error: incomprehensible - sumimasen, sonogo shaberanai'
-    
-    if ctx.req.method == .get {
-        return ctx.text('Perhaps you are confused, senpai?')
-    }
-    
-    in_json := ctx.form['json'] or {
-        return ctx.request_error(error_message)
-    }
+	in_json := '{"username":"testu","email":"teste","password":"testp"}'
 
     registration_request := json.decode(RegistrationRequest, in_json) or {
-        return ctx.request_error(error_message)
+        if app.env == Enviroment.development {
+			panic(err)
+		}
+		else if app.env == Enviroment.production {
+			elogger(err)
+			return ctx.request_error(error_message)
+		}
+		else {
+			panic(err)
+		}
     }
 
-    // Server side, verify no fields are blank. 
-    match true {
-        registration_request.username.len == 0  { return ctx.request_error(error_message) }
-        registration_request.email.len == 0     { return ctx.request_error(error_message) }
-        registration_request.password.len == 0  { return ctx.request_error(error_message) }
-        else {}
-    }
-
-	// TODO: IMPLEMENT PASSWORD CHECK
-	// TODO: IMPLEMENT EMAIL VALIDATION AND UNIQUIETY
-	// TODO: IMPLEMENT USERNAME VALIDATION AND UNIQUIETY
-	// TODO: DERIVE USER PERMISSION LEVEL.
-	user_permissions := Permission.owner // Bad default
+	user_permissions := Permission.owner
 
 	new_user := User {
 		status: UserStatus.enabled
