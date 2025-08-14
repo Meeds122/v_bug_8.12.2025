@@ -7,8 +7,6 @@ import crypto.sha256
 import rand
 import rand.seed
 
-import time
-
 
 pub struct Context {
     veb.Context
@@ -25,10 +23,8 @@ pub:
     // For example, a database or configuration values.
     api_version     string
     db              sqlite.DB
-    env             Enviroment
     port            u16
     hash_algorithm  HashAlgorithm
-    verbose_logging bool            // Verbose logging only available in Development mode
 }
 
 fn main() {
@@ -36,10 +32,8 @@ fn main() {
     mut app := &App{
         api_version:    "0.0.0" // Probably want to move this to the v.mod version number
         db:             sqlite.connect('securitysensei.db') or { panic(err) }
-        env:            Enviroment.development
         port:           8080
         hash_algorithm: HashAlgorithm.sha256
-        verbose_logging: true
     }
 
     // Setup DB tables if not exist.
@@ -50,24 +44,6 @@ fn main() {
 
     // Pass the App and context type and start the web server on port 8080
     veb.run[App, Context](mut app, app.port)
-}
-
-
-// ----------------
-// -- Misc Types --
-// ----------------
-enum Enviroment as u8 {
-    development
-    production
-}
-
-enum LogSeverity as u8 {
-    critical
-    high
-    medium
-    low
-    informational
-    verbose
 }
 
 // ---------------------------
@@ -127,13 +103,6 @@ pub:
     expiration      i64         // if set to 0, never expire. 
     permissions     Permission
     api_key         string
-}
-
-pub struct RegistrationRequest {
-pub:
-    username    string
-    email       string
-    password    string
 }
 
 // ----------------------
