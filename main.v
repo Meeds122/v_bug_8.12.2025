@@ -46,14 +46,7 @@ fn main() {
     sql app.db {
         create table User
         create table ApiUser
-    } or {
-        if app.env == Enviroment.development {
-            panic(err)
-        }
-        else if app.env == Enviroment.production {
-            elogger(err)
-        }
-    }
+    } or { panic(error) }
 
     // Pass the App and context type and start the web server on port 8080
     veb.run[App, Context](mut app, app.port)
@@ -174,15 +167,6 @@ fn verify_password (algorithm HashAlgorithm, password string, salt string, to_co
 	return false
 }
 
-fn elogger(error IError) {
-    println('${time.now().format_ss_milli()} LOG ERROR "${error}"')
-}
-
-fn logger(severity LogSeverity, message string) {
-	upper_severity := "${severity}".to_upper()
-	println('${time.now().format_ss_milli()} LOG ${upper_severity} "${message}"')
-}
-
 // -----------------------
 // -- Public Routes --
 // -----------------------
@@ -190,42 +174,18 @@ fn logger(severity LogSeverity, message string) {
 @['/api/user_registration'; get; post]
 pub fn (app &App) user_registration(mut ctx Context) veb.Result {
 
-	error_message := 'error'
-
 	new_user := User {
 		status: UserStatus.enabled
 		name: 'testu'
 		email: 'teste'
-		password_hash: new_hash_password('testp', app.hash_algorithm) or {
-				if app.env == Enviroment.development {
-					panic(err)
-				}
-				else if app.env == Enviroment.production {
-					elogger(err)
-					return ctx.request_error(error_message)
-				}
-				else {
-					panic(err)
-				}
-			}
+		password_hash: new_hash_password('testp', app.hash_algorithm) or { panic(error) }
 		permisisons: Permission.owner
 	}
 
 	// Compiler Bug
 	user_id := sql app.db {
 		insert new_user into User
-	} or {
-        if app.env == Enviroment.development {
-            panic(err)
-        }
-        else if app.env == Enviroment.production {
-            elogger(err)
-			return ctx.request_error(error_message)
-        }
-		else {
-			panic(err)
-		}
-    }
+	} or { panic(error) }
 
     return ctx.json(new_user)
 }
