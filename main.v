@@ -16,7 +16,6 @@ pub struct Context {
 pub mut:
     // In the context struct we store data that could be different
     // for each request. Like a User struct or a session id 
-    session Session
     user User
     api_user ApiUser
 }
@@ -32,7 +31,6 @@ pub:
     hash_algorithm  HashAlgorithm
     verbose_logging bool            // Verbose logging only available in Development mode
 pub mut:
-    sessions        []Session       // The array of currently open sessions
     assets          []Asset         // The array of assets available to all endpoints. Syncs to DB
     assets_status   AssetsStatus    // The current status of the asssets array
 }
@@ -170,39 +168,6 @@ enum Permission as u8 {
 enum UserStatus as u8 {
     enabled
     disabled
-}
-
-// Session Status is used to return to the client in a Cookie. When the session status is != valid
-// the client will clear the cookies and redirect for a new sign-in or display a complaint based on the value.
-enum SessionStatus as u8 {
-    valid
-    invalid
-    failure
-    timeout
-}
-
-// SessionType is used to decide whether a session is a User or an ApiUser
-enum SessionType as u8 {
-    user
-    api
-}
-
-// This struct defines what a session looks like. We have a type field and then use that to decide if this is a user ID 
-// to reference off of, creation and expiration times 
-// to check if the session should be moved to SessionStatus.timeout. The token is the actual API key used for requests. 
-// A permissions struct to be used by the front-end to decide which elements to display. We check the actual User.permissions
-// value at each API endpoint to see what we should let them do. Status is how we return the SessionStatus. 
-pub struct Session {
-pub:
-    session_type    SessionType
-    type_id         int
-    creation        i64     // For the 2038 problem
-    expiration      i64     // For the 2038 problem
-    token           string
-    permission      Permission
-    ip_address      string
-pub mut:
-    status          SessionStatus
 }
 
 enum HashAlgorithm as u8 {
