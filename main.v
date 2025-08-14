@@ -30,9 +30,6 @@ pub:
     port            u16
     hash_algorithm  HashAlgorithm
     verbose_logging bool            // Verbose logging only available in Development mode
-pub mut:
-    assets          []Asset         // The array of assets available to all endpoints. Syncs to DB
-    assets_status   AssetsStatus    // The current status of the asssets array
 }
 
 fn main() {
@@ -48,8 +45,6 @@ fn main() {
 
     // Setup DB tables if not exist.
     sql app.db {
-        create table ChangeEntry
-        create table Asset
         create table User
         create table ApiUser
     } or {
@@ -81,75 +76,6 @@ enum LogSeverity as u8 {
     low
     informational
     verbose
-}
-
-// -----------------------
-// -- Asset Definitions --
-// -----------------------
-
-// This struct is used to communicate the current Asset status
-// to the client. If the client's last update timestamp is less
-// than this timestamp, the asset list is out of date. 
-// current_size is used to display loading status to client. 
-pub struct AssetsStatus {
-pub mut:
-    last_update i64 // 2038 problem
-    current_size int
-}
-
-enum AssetType as u8 {
-    workstation
-    desktop
-    laptop
-    phone
-    tablet
-    room
-    printer
-    server
-    other_system
-    switch
-    router
-    firewall
-    other_network
-    paas
-    saas
-    iaas
-    other_cloud
-    unknown
-}
-
-enum AssetStatus as u8 {
-    active
-    inactive
-    maintenance
-    retired
-    unknown
-}
-
-pub struct ChangeEntry {
-pub:
-    change_id   int @[primary; unique]
-    parent_id   int
-	timestamp 	i64     // 2038 problem
-	description	string
-}
-
-@[table: 'Assets']
-pub struct Asset {
-pub:
-    asset_id    int @[primary; unique]
-pub mut:
-    name        string
-    type        AssetType
-    status      AssetStatus
-    location    string
-    ip_address  string
-    creation    i64         // 2038 problem
-    last_update i64         // 2038 problem
-    assignment  string
-    user        string
-    description string
-    changelog   []ChangeEntry @[fkey: 'parent_id']
 }
 
 // ---------------------------
