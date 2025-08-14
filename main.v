@@ -22,8 +22,6 @@ pub mut:
 }
 
 pub struct App {
-    // Embedding the middleware feature with the Context struct
-    veb.Middleware[Context]
 pub:
     // In the app struct we store data that should be accessible by all endpoints.
     // For example, a database or configuration values.
@@ -49,11 +47,6 @@ fn main() {
         hash_algorithm: HashAlgorithm.sha256
         verbose_logging: true
     }
-
-    // Register Middleware
-    app.use(handler: app.development_logging_middleware)
-    app.route_use('/api/tests', handler: app.check_enviroment_middleware)
-    app.route_use('/api/tests/:path...', handler: app.check_enviroment_middleware)
 
     // Setup DB tables if not exist.
     sql app.db {
@@ -326,31 +319,6 @@ fn index_html(version string, enviroment string) string {
                     </ul>
                 </body></html>'
 	return page
-}
-
-
-// ----------------
-// -- Middleware --
-// ----------------
-
-// Used for verbose logging (every request gets logged.)
-pub fn (app &App) development_logging_middleware (mut ctx Context) bool {
-	if app.verbose_logging && (app.env == Enviroment.development) {
-		logger(LogSeverity.verbose, 'host:${ctx.req.host} url:${ctx.req.url} data:${ctx.req.data}')
-		return true
-	}
-
-	return true
-}
-
-// This function is the registered middleware to block access to all of the
-// /api/tests/ endpoints if the server is configured for production. 
-pub fn (app &App) check_enviroment_middleware (mut ctx Context) bool {
-    if app.env == Enviroment.production {
-        ctx.request_error("Error: Route disabled in production")
-        return false
-    }
-    return true
 }
 
 // -----------------------
